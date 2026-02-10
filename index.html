@@ -1821,6 +1821,17 @@
                 padding: 24px;
             }
         }
+
+        /* Case Study Video Styles */
+        .video-container:hover .play-button {
+            transform: scale(1.1);
+            background: var(--accent-mint-hover);
+        }
+
+        .video-container.playing .video-overlay {
+            opacity: 0;
+            pointer-events: none;
+        }
     </style>
 </head>
 
@@ -2209,12 +2220,22 @@
             </div>
 
             <div style="max-width: 900px; margin: 0 auto; padding: 0 24px;">
-                <video controls preload="metadata" controlslist="nodownload"
-                    poster="https://seastonesolutions.io/wp-content/uploads/2023/12/Henry_Chan_Lead_Generation_Case_Study_Cover_Photo.png"
-                    style="width: 100%; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.1);">
-                    <source src="https://seastonesolutions.io/wp-content/uploads/2023/12/CaseStudyFinal1.mp4"
-                        type="video/mp4">
-                </video>
+                <div class="video-container" id="video-container"
+                    style="position: relative; cursor: pointer; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.1);">
+                    <video id="case-study-video" preload="metadata"
+                        poster="assets/Henry Chan Lead Generation Case Study Cover Photo.png"
+                        style="width: 100%; display: block;">
+                        <source src="assets/Case Study Final.mp4" type="video/mp4">
+                    </video>
+                    <div class="video-overlay" id="video-overlay"
+                        style="position: absolute; inset: 0; background: rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease;">
+                        <div class="play-button"
+                            style="width: 80px; height: 80px; background: var(--accent-mint); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(89, 201, 161, 0.4); transition: transform 0.3s ease;">
+                            <i data-lucide="play"
+                                style="width: 32px; height: 32px; fill: var(--bg-dark); color: var(--bg-dark); margin-left: 4px;"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -2876,6 +2897,35 @@
                 document.body.style.overflow = '';
             }
         });
+
+        // --- VIDEO PLAYBACK LOGIC ---
+        const videoContainer = document.getElementById('video-container');
+        const video = document.getElementById('case-study-video');
+        const videoOverlay = document.getElementById('video-overlay');
+
+        if (videoContainer && video) {
+            videoContainer.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                    video.setAttribute('controls', 'true');
+                    videoContainer.classList.add('playing');
+                } else {
+                    video.pause();
+                    videoContainer.classList.remove('playing');
+                }
+            });
+
+            // Prevent click propagation from controls to container if needed
+            video.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Handle video end
+            video.addEventListener('ended', () => {
+                videoContainer.classList.remove('playing');
+                video.removeAttribute('controls');
+            });
+        }
     </script>
 </body>
 
